@@ -1,0 +1,52 @@
+﻿@page "/Prestamo"
+@inject IPrestamoService PrestamoService
+
+<h3>Prestamos</h3>
+
+@if (string.IsNullOrWhiteSpace(errorString) == false)
+{
+    <div class="h2">@errorString</div>
+}
+else if (prestamos is null)
+{
+    <div class="h4">Loading...</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in prestamos)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Monto</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    public IEnumerable<Prestamo> prestamos { get; set; }
+    private string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            prestamos = (await PrestamoService.GetPrestamos()).ToList();
+            errorString = null;
+        }
+        catch (Exception ex)
+        {
+            errorString = $"There was an error getting our Loans. {ex.Message}";
+        }
+    }
+}
